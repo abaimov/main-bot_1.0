@@ -1,5 +1,5 @@
 import {Bot, GrammyError, HttpError,InlineKeyboard} from "grammy";
-import {PrismaClient} from '@prisma/client';
+// import {PrismaClient} from '@prisma/client';
 import dotenv from 'dotenv';
 dotenv.config();
 const prisma = new PrismaClient()
@@ -31,17 +31,17 @@ bot.on('message', async (ctx) => {
     const TEXT = ctx.message.text;
     const LOCATION = ctx.from.language_code;
     if (TEXT === "/start" && LOCATION === 'ru') {
-        try {
-            await prisma.user.create({
-                data: {
-                    telegramId: String(ctx.from.id),
-                    language: ctx.from.language_code,
-                    nickname: ctx.from.username
-                }
-            });
-        } catch (e) {
-            console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
-        }
+        // try {
+        //     await prisma.user.create({
+        //         data: {
+        //             telegramId: String(ctx.from.id),
+        //             language: ctx.from.language_code,
+        //             nickname: ctx.from.username
+        //         }
+        //     });
+        // } catch (e) {
+        //     console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
+        // }
         try {
             await ctx.react("👍");
             const answer = await ctx.replyWithPhoto(images.MAIN_IMAGE, {

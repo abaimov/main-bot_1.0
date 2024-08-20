@@ -4,7 +4,7 @@ import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient()
 
-const bot = new Bot('7302018267:AAHMGwEykO6dcfhvoo63namXkuCZ0_o9_no');
+const bot = new Bot('7130952585:AAELSFJ90GUIYMV6j5PFFCSWNe_w49cu6n0');
 
 bot.on('message', async (ctx) => {
     const TEXT = ctx.message.text;

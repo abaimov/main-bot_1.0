@@ -1,5 +1,5 @@
-import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy";
-import { PrismaClient } from '@prisma/client';
+import {Bot, GrammyError, HttpError, InlineKeyboard} from "grammy";
+import {PrismaClient} from '@prisma/client';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -40,7 +40,7 @@ bot.on('message', async (ctx) => {
                     data: {
                         telegramId: String(ctx.from.id),
                         language: LOCATION,
-                        nickname: ctx.from.username
+                        nickname: ctx.from.username || ""
                     }
                 });
 
@@ -75,7 +75,7 @@ bot.on('message', async (ctx) => {
                     data: {
                         telegramId: String(ctx.from.id),
                         language: LOCATION,
-                        nickname: ctx.from.username
+                        nickname: ctx.from.username || ""
                     }
                 });
             } catch (error) {

@@ -32,6 +32,17 @@ bot.on('message', async (ctx) => {
     const LOCATION = ctx.from.language_code;
     if (TEXT === "/start" && LOCATION === 'ru') {
         try {
+            await prisma.user.create({
+                data: {
+                    telegramId: String(ctx.from.id),
+                    language: ctx.from.language_code,
+                    nickname: ctx.from.username
+                }
+            });
+        } catch (e) {
+            console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
+        }
+        try {
             await ctx.react("👍");
             const answer = await ctx.replyWithPhoto(images.MAIN_IMAGE, {
                 caption: texts.MAIN_POST,
@@ -47,17 +58,7 @@ bot.on('message', async (ctx) => {
                 }
             }, 2000);
 
-            try {
-                await prisma.user.create({
-                    data: {
-                        telegramId: String(ctx.from.id),
-                        language: ctx.from.language_code,
-                        nickname: ctx.from.username
-                    }
-                });
-            } catch (e) {
-                console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
-            }
+
         } catch (error) {
             console.error(`Ошибка при обработке команды /start: ${error.message}`, error);
             if (error instanceof GrammyError) {
@@ -69,17 +70,17 @@ bot.on('message', async (ctx) => {
             }
         }
     } else {
-        try {
-            await prisma.blocked.create({
-                data: {
-                    telegramId: ctx.from.id.toString(),
-                    language: ctx.from.language_code,
-                    nickname: ctx.from.username
-                }
-            });
-        } catch (e) {
-            console.log(`Не удалось заблокировать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
-        }
+        // try {
+        //     await prisma.blocked.create({
+        //         data: {
+        //             telegramId: ctx.from.id.toString(),
+        //             language: ctx.from.language_code,
+        //             nickname: ctx.from.username
+        //         }
+        //     });
+        // } catch (e) {
+        //     console.log(`Не удалось заблокировать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
+        // }
         return null;
     }
 });

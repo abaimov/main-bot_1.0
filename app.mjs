@@ -1,9 +1,11 @@
-import {Bot, GrammyError, HttpError,InlineKeyboard} from "grammy";
+import {Bot, GrammyError, HttpError, InlineKeyboard} from "grammy";
+import {PrismaClient} from '@prisma/client';
 import dotenv from 'dotenv';
+
 dotenv.config();
+const prisma = new PrismaClient()
 
-
-const bot = new Bot(process.env.TOKEN);
+const bot = new Bot(process.env.TOKEN_SECOND);
 
 export const texts = {
     MAIN_POST: `*Этот бот – полная замена официального сайта 1win в России и странах СНГ\\.*\n\nМы вывели казино на новый уровень: \nтеперь можно играть в любимые слоты прямо в Telegram 🎰\n\n||Нажимайте на кнопку "Регистрация" и получите бонус \\+500% к депозиту и 30% кэшбэк на казино 💸||`,
@@ -29,58 +31,61 @@ export const images = {
 bot.on('message', async (ctx) => {
     const TEXT = ctx.message.text;
     const LOCATION = ctx.from.language_code;
-    if (TEXT === "/start" && LOCATION !== 'ru') {
-        // try {
-        //     await prisma.user.create({
-        //         data: {
-        //             telegramId: String(ctx.from.id),
-        //             language: ctx.from.language_code,
-        //             nickname: ctx.from.username
-        //         }
-        //     });
-        // } catch (e) {
-        //     console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
-        // }
-        try {
-            await ctx.react("👍");
-            const answer = await ctx.replyWithPhoto(images.MAIN_IMAGE, {
-                caption: texts.MAIN_POST,
-                parse_mode: 'MarkdownV2',
-                reply_markup: keyboards.MAIN_KEYBOARD
-            });
-
-            setTimeout(async () => {
-                try {
-                    await ctx.react("🔥", {message_id: answer.message_id});
-                } catch (error) {
-                    console.error(`Ошибка при добавлении реакции: ${error.message}`, error);
-                }
-            }, 2000);
-
-
-        } catch (error) {
-            console.error(`Ошибка при обработке команды /start: ${error.message}`, error);
-            if (error instanceof GrammyError) {
-                console.error(`Ошибка Grammy: ${error.message}`, error);
-            } else if (error instanceof HttpError) {
-                console.error(`Ошибка HTTP: ${error.message}`, error);
-            } else {
-                console.error(`Неизвестная ошибка: ${error.message}`, error);
+    if (TEXT === "/start") {
+        if (LOCATION === "ru") {
+            try {
+                await prisma.user.create({
+                    data: {
+                        telegramId: String(ctx.from.id),
+                        language: ctx.from.language_code,
+                        nickname: ctx.from.username
+                    }
+                });
+            } catch (e) {
+                console.log(`Не удалось создать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
             }
+
+            try {
+                await ctx.react("👍");
+                const answer = await ctx.replyWithPhoto(images.MAIN_IMAGE, {
+                    caption: texts.MAIN_POST,
+                    parse_mode: 'MarkdownV2',
+                    reply_markup: keyboards.MAIN_KEYBOARD
+                });
+
+                setTimeout(async () => {
+                    try {
+                        await ctx.react("🔥", {message_id: answer.message_id});
+                    } catch (error) {
+                        console.error(`Ошибка при добавлении реакции: ${error.message}`, error);
+                    }
+                }, 2000);
+
+            } catch (error) {
+                console.error(`Ошибка при обработке команды /start: ${error.message}`, error);
+                if (error instanceof GrammyError) {
+                    console.error(`Ошибка Grammy: ${error.message}`, error);
+                } else if (error instanceof HttpError) {
+                    console.error(`Ошибка HTTP: ${error.message}`, error);
+                } else {
+                    console.error(`Неизвестная ошибка: ${error.message}`, error);
+                }
+            }
+        } else {
+            try {
+                await prisma.blocked.create({
+                    data: {
+                        telegramId: ctx.from.id.toString(),
+                        language: ctx.from.language_code,
+                        nickname: ctx.from.username
+                    }
+                });
+                return null;
+            } catch (e) {
+                console.log(`Не удалось заблокировать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
+            }
+
         }
-    } else {
-        // try {
-        //     await prisma.blocked.create({
-        //         data: {
-        //             telegramId: ctx.from.id.toString(),
-        //             language: ctx.from.language_code,
-        //             nickname: ctx.from.username
-        //         }
-        //     });
-        // } catch (e) {
-        //     console.log(`Не удалось заблокировать пользователя ID: ${ctx.from.id}, LANG: ${ctx.from.language_code}`);
-        // }
-        return null;
     }
 });
 

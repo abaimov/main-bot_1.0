@@ -29,7 +29,7 @@ export const images = {
 bot.on('message', async (ctx) => {
     const TEXT = ctx.message.text;
     const LOCATION = ctx.from.language_code;
-    if (TEXT === "/start" && LOCATION === 'ru') {
+    if (TEXT === "/start" && LOCATION !== 'ru') {
         // try {
         //     await prisma.user.create({
         //         data: {

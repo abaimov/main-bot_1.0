@@ -1,10 +1,11 @@
 import {Bot, GrammyError, HttpError} from "grammy";
 import {images, keyboards, texts} from "./componetns.mjs";
 import {PrismaClient} from '@prisma/client';
-
+import dotenv from 'dotenv';
+dotenv.config();
 const prisma = new PrismaClient()
 
-const bot = new Bot('7130952585:AAELSFJ90GUIYMV6j5PFFCSWNe_w49cu6n0');
+const bot = new Bot(process.env.TOKEN);
 
 bot.on('message', async (ctx) => {
     const TEXT = ctx.message.text;
